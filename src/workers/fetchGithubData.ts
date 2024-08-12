@@ -6,7 +6,6 @@ const fetchGithubData = async (repoName: string, author: string) => {
   try {
     const repositoryId = await saveRepositoryData(repoName, author);
     await saveCommits(repoName, author);
-    console.log('here')
 
     // After the initial fetch, start checking for updates every 10 minutes.
     setInterval(async () => {

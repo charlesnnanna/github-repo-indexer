@@ -10,13 +10,13 @@ export const saveRepositoryData = async (repoName: string, author: string) => {
     console.log(repoData)
     const [repositoryId] = await db('repositories').insert({
       name: repoData.name,
-      description: repoData.description,
+      description: repoData.description || 'No description provided',
       url: repoData.html_url,
-      language: repoData.language,
-      forks_count: repoData.forks_count,
-      stars_count: repoData.stargazers_count,
-      open_issues_count: repoData.open_issues_count,
-      watchers_count: repoData.watchers_count,
+      language: repoData.language || 'Unknown',
+      forks_count: repoData.forks_count || 0,
+      stars_count: repoData.stargazers_count || 0,
+      open_issues_count: repoData.open_issues_count || 0,
+      watchers_count: repoData.watchers_count || 0,
       author: repoData.owner.login,
       time_of_first_commit: repoData.created_at
     }).returning('id');
@@ -35,16 +35,17 @@ export const saveCommits = async (repoName: string, author: string, since?: stri
     throw new Error(`Repository ${repoName} not found`);
   }
 
-  const lastCommit = await db('commits').where({id: repository.id}).first()
+  const lastCommit = await db('commits').where({repository_id: repository.id}).first()
+  console.log(lastCommit)
 
   if(!lastCommit){
     const commits = await fetchCommits(repoName, author, repository.time_of_first_commit);
-    console.log(commits, 'few or nothing') 
+    console.log(commits, 'everything') 
 
     const commitPromises = commits.map(async (commit: any) => {
       return db('commits').insert({
         repository_id: repository.id,
-        commit_message: commit.commit.message,
+        commit_message: commit.commit.message || 'No commit message',
         author_name: commit.commit.author.name,
         author_email: commit.commit.author.email,
         commit_date: commit.commit.author.date,
@@ -55,20 +56,30 @@ export const saveCommits = async (repoName: string, author: string, since?: stri
     await Promise.all(commitPromises); 
   } else {
     const commits = await fetchCommits(repoName, author, lastCommit.commit_date);
-    console.log(commits)
+    const newCommits = commits.slice(0, -1)
+    console.log(newCommits, 'few or nothing')
 
-    const commitPromises = commits.map(async (commit: any) => {
-      return db('commits').insert({
-        repository_id: repository.id,
-        commit_message: commit.commit.message,
-        author_name: commit.commit.author.name,
-        author_email: commit.commit.author.email,
-        commit_date: commit.commit.author.date,
-        commit_url: commit.html_url,
+    if(newCommits){
+      const commitPromises = newCommits.map(async (commit: any) => {
+
+      const exists = await db('commits')
+      .where({ commit_url: commit.html_url })
+      .first();
+      
+      if(!exists){
+        return db('commits').insert({
+          repository_id: repository.id,
+          commit_message: commit.commit.message,
+          author_name: commit.commit.author.name,
+          author_email: commit.commit.author.email,
+          commit_date: commit.commit.author.date,
+          commit_url: commit.html_url,
+        });
+      }
       });
-    });
-  
-    await Promise.all(commitPromises); 
+      await Promise.all(commitPromises); 
+
+    }
   }
 };
 

@@ -28,6 +28,6 @@ const startWorker = (repoName: string, author: string) => {
 };
 
 // Start the worker with the default repository
-startWorker('dauntbooks', 'charlesnnanna');
+startWorker('chromium', 'chromium');
 
 export default app;

@@ -3,3 +3,4 @@ node_modules/
 migrations/
 dist/
 dev.sqlite3
+coverage/

@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import db from '../config/database';
 
 export const getTopAuthors = async (req: Request, res: Response) => {
-  const { repositoryName } = req.params;
-  const { limit = 10 } = req.query;
+  const { repositoryName, repoAuthor } = req.params;
+  const { limit } = req.query;
 
   const authors = await db('commits')
     .select('author_name')
@@ -13,6 +13,8 @@ export const getTopAuthors = async (req: Request, res: Response) => {
     .groupBy('author_name')
     .orderBy('commit_count', 'desc')
     .limit(Number(limit));
+    
+    console.log(authors)
 
   res.json(authors);
 };
