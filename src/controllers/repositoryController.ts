@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import db from '../config/database';
 
 export const getTopAuthors = async (req: Request, res: Response) => {
-  const { repositoryName, repoAuthor } = req.params;
+  const { repositoryName } = req.params;
   const { limit } = req.query;
 
   const authors = await db('commits')

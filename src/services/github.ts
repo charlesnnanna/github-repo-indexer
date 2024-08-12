@@ -47,7 +47,7 @@ export const fetchCommits = async (repoName: string, author:string, since?: stri
       headers: {
         Authorization: `${GITHUB_ACCESS_TOKEN}`,
       },
-      params: { since },
+      params: { since, per_page: 100 },
     });
     return response.data;
   } catch (error:any) {

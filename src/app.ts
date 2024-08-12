@@ -28,6 +28,8 @@ const startWorker = (repoName: string, author: string) => {
 };
 
 // Start the worker with the default repository
+// To change the repository the app will fetch 
+// You can change the repoName and the author respectively
 startWorker('chromium', 'chromium');
 
 export default app;

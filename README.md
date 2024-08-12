@@ -49,3 +49,24 @@ npm run build
 ```bash
 npm run start
 ```
+
+### About the App
+- In the app.ts, you can change the repository you want the app to monitor and track by changing the parameters of the startWorker function.
+```bash
+startWorker(repoName, author)
+```
+This can be further modified to make it dynamic. But in this app, it's static.
+
+### Endpoints
+- Get Top N Commit Authors by commit counts
+```bash
+GET /repository/:repositoryName/top-authors?limit=N
+```
+N is the number of top authors you want to get.
+
+- Get commits of a repository by repository name from database
+```bash
+GET /repository/:repositoryName/commits
+```
+The repositoryName must be the repoName specified in the startWorker function.
+I know the idea would be to make it dynamic, but this is just the basic level of the app from where we can see what is possible.

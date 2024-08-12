@@ -4,13 +4,12 @@ import { saveCommits, saveRepositoryData } from '../services/repository.js';
 
 const fetchGithubData = async (repoName: string, author: string) => {
   try {
-    const repositoryId = await saveRepositoryData(repoName, author);
+    await saveRepositoryData(repoName, author);
     await saveCommits(repoName, author);
 
     // After the initial fetch, start checking for updates every 10 minutes.
     setInterval(async () => {
-      const newCommit = await saveCommits(repoName, author);
-      console.log(newCommit, "Just checked for commit ")
+      await saveCommits(repoName, author);
     }, 10 * 60 * 1000); // 10 minutes in milliseconds
 
   } catch (error) {

@@ -7,7 +7,6 @@ export const saveRepositoryData = async (repoName: string, author: string) => {
 
   if(!existingRepo){
     const repoData = await fetchRepositoryData(repoName, author);
-    console.log(repoData)
     const [repositoryId] = await db('repositories').insert({
       name: repoData.name,
       description: repoData.description || 'No description provided',
@@ -22,7 +21,6 @@ export const saveRepositoryData = async (repoName: string, author: string) => {
     }).returning('id');
     return repositoryId;
   } else {
-    console.log(existingRepo)
     return existingRepo.repository_id
   }
 };
@@ -36,11 +34,9 @@ export const saveCommits = async (repoName: string, author: string, since?: stri
   }
 
   const lastCommit = await db('commits').where({repository_id: repository.id}).first()
-  console.log(lastCommit)
 
   if(!lastCommit){
     const commits = await fetchCommits(repoName, author, repository.time_of_first_commit);
-    console.log(commits, 'everything') 
 
     const commitPromises = commits.map(async (commit: any) => {
       return db('commits').insert({
@@ -57,7 +53,6 @@ export const saveCommits = async (repoName: string, author: string, since?: stri
   } else {
     const commits = await fetchCommits(repoName, author, lastCommit.commit_date);
     const newCommits = commits.slice(0, -1)
-    console.log(newCommits, 'few or nothing')
 
     if(newCommits){
       const commitPromises = newCommits.map(async (commit: any) => {
@@ -65,7 +60,7 @@ export const saveCommits = async (repoName: string, author: string, since?: stri
       const exists = await db('commits')
       .where({ commit_url: commit.html_url })
       .first();
-      
+
       if(!exists){
         return db('commits').insert({
           repository_id: repository.id,
